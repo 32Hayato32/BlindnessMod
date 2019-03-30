@@ -1,0 +1,12 @@
+{
+    "package": "blindnessmod.mixin",
+    "refmap": "mixins.blindnessmod.refmap.json",
+    "target": "@env(DEFAULT)",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [
+	  	"block.MixinBlock",
+	  	"renderer.MixinTileEntityRendererDispatcher",
+	  	"renderer.MixinBlockRendererDispatcher",
+	  	"renderer.MixinRenderFallingBlock"
+    ]
+}
