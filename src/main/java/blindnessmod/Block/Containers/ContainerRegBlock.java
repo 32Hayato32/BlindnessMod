@@ -1,24 +1,26 @@
 package blindnessmod.Block.Containers;
 
-import blindnessmod.Tileentity.TileRegBlock;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IContainerListener;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ContainerRegBlock extends Container{
 
-	private final TileRegBlock tile;
+	private final IInventory tile;
+	private int flag;
 
-	public ContainerRegBlock(InventoryPlayer p, TileRegBlock t) {
+
+	public ContainerRegBlock(InventoryPlayer p, IInventory t) {
 
 		this.tile = t;
-		IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-		this.addSlotToContainer(new SlotItemHandler(handler, 0, 46, 91));
+		//IItemHandler handler = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+		this.addSlotToContainer(new Slot(t, 0, 46, 91));
 
 		//Inventory
 		for(int y = 0; y < 3; y++)
@@ -49,7 +51,7 @@ public class ContainerRegBlock extends Container{
 
             if (index == 0)
             {
-                if (!this.mergeItemStack(itemstack1, 0, this.inventorySlots.size(), true))
+                if (!this.mergeItemStack(itemstack1, 1, this.inventorySlots.size(), true))
                 {
                     return ItemStack.EMPTY;
                 }
@@ -74,8 +76,32 @@ public class ContainerRegBlock extends Container{
 
 	@Override
 	public boolean canInteractWith(EntityPlayer p) {
-		// TODO 自動生成されたメソッド・スタブ
 		return this.tile.isUsableByPlayer(p);
 	}
 
+	@Override
+	public void addListener(IContainerListener listener) {
+		super.addListener(listener);
+		listener.sendAllWindowProperties(this, tile);
+	}
+
+	@Override
+	public void detectAndSendChanges() {
+		super.detectAndSendChanges();
+		for (int i = 0; i < this.listeners.size(); ++i)
+        {
+			IContainerListener icontainerlistener = this.listeners.get(i);
+			if (this.flag != this.tile.getField(0))
+			{
+				icontainerlistener.sendWindowProperty(this, 0, this.tile.getField(0));
+			}
+        }
+		this.flag = tile.getField(0);
+	}
+
+    @SideOnly(Side.CLIENT)
+    public void updateProgressBar(int id, int data)
+    {
+        this.tile.setField(id, data);
+    }
 }

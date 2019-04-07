@@ -52,7 +52,7 @@ public class RegistryHandler {
 	}
 
 	public static void preInitRegistries(FMLPreInitializationEvent event) {
-
+		PacketHandler.init();
 	}
 
 	public static void initRegistries(FMLInitializationEvent event) {
