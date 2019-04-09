@@ -16,6 +16,7 @@ public class MessageTestHandler implements IMessageHandler<MessageTest, IMessage
         player.getServerWorld().addScheduledTask(() -> {
             World world = player.world;
             TileRegBlock te = (TileRegBlock) world.getTileEntity(new BlockPos(message.x,message.y,message.z));
+            System.out.println(message.x);
             te.setFlag(message.flag);
             te.markDirty();
         });

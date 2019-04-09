@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import blindnessmod.BlindnessMod;
 import blindnessmod.util.RegListUtil;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
@@ -50,6 +51,7 @@ public class TileRegBlock extends TileEntity implements ITickable,IInventory{
 
 	public boolean Reg() {
 		ItemStack item = this.ItemStacks.get(0);
+		if(item.getItem() == Items.AIR)return false;
 		int id = Item.getIdFromItem(item.getItem());
 		int meta = item.getMetadata();
 		int count = item.getCount();
@@ -66,6 +68,27 @@ public class TileRegBlock extends TileEntity implements ITickable,IInventory{
 			return true;
 		}else
 		{
+			return false;
+		}
+	}
+
+	public boolean addOsonae(int index) {
+		ItemStack item = RegUtil.getItem(index);
+		ItemStack initem = this.ItemStacks.get(0);
+		Item i = initem.getItem();
+		if(i == Items.IRON_INGOT || i == Items.GOLD_INGOT || i == Items.EMERALD || i == Items.DIAMOND) {
+			int id = Item.getIdFromItem(item.getItem());
+			int meta = item.getMetadata();
+			float Discnt = RegUtil.getRate(i) * initem.getCount();
+			System.out.println(Discnt);
+			String str = id + ":" + meta;
+			int bafCnt =RegUtil.getCount(item);
+			float bafDiscnt = RegUtil.getDisCount(item);
+			float rdc = (bafDiscnt + Discnt) >= 100.0?100.0f:bafDiscnt + Discnt;
+			BlindnessMod.RegBlockList.put(str,bafCnt + ":" + rdc);
+			System.out.println("add O★S★O★N★A★E!");
+			return true;
+		}else{
 			return false;
 		}
 	}
@@ -99,9 +122,17 @@ public class TileRegBlock extends TileEntity implements ITickable,IInventory{
 
 	@Override
 	public void update() {
-		if(this.getFlag() == 1) {
-			this.ItemStacks.set(0, ItemStack.EMPTY);
-			this.setFlag(0);
+		switch(this.getFlag()) {
+			case 1:
+				this.ItemStacks.set(0, ItemStack.EMPTY);
+				this.setFlag(0);
+				break;
+			case 2:
+				Item item = ItemStacks.get(0).getItem();
+				if(item == Items.IRON_INGOT || item == Items.GOLD_INGOT || item == Items.EMERALD || item == Items.DIAMOND)
+					this.ItemStacks.set(0,ItemStack.EMPTY);
+				this.setFlag(0);
+				break;
 		}
 	}
 

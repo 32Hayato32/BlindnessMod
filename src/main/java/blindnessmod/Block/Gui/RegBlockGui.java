@@ -27,6 +27,7 @@ public class RegBlockGui extends GuiContainer{
 	private static final ResourceLocation TEXTURES = new ResourceLocation(Reference.MODID + ":textures/gui/register_block.png");
 	private final InventoryPlayer player;
 	private final IInventory tile;
+	private final TileRegBlock trb;
 	private final RegListUtil RegUtil;
 	private final ContainerRegBlock container;
 	private int currentIdx;
@@ -39,7 +40,9 @@ public class RegBlockGui extends GuiContainer{
     private int ButtonX;
     private int ButtonY;
     private boolean isButtonClick;
+    private boolean isButton2Click;
 
+    private boolean UnlockFlag;
     private boolean isSelect;
     private int SelectIdx;
 
@@ -50,6 +53,7 @@ public class RegBlockGui extends GuiContainer{
 		this.RegUtil = new RegListUtil();
 		this.player = p;
 		this.tile = t;
+		this.trb  =(TileRegBlock)t;
 	}
 
 	@Override
@@ -80,42 +84,35 @@ public class RegBlockGui extends GuiContainer{
         int i1 = k + 14;
         int j1 = l + 74;
 
-        if (!this.wasClicking && flag && mouseX >= k && mouseY >= l && mouseX < i1 && mouseY < j1)
-        {
-            this.isScrolling = true;
-            this.isSelect = false;
-        }else if(!this.wasClicking && flag && mouseX >= i + this.ButtonX && mouseY >= j + this.ButtonY && mouseX < i + this.ButtonX + 31 && mouseY < j + this.ButtonY + 15) {
-        	this.isButtonClick = true;
-        	TileRegBlock t = (TileRegBlock)this.tile;
-        	if(t.Reg()) {
-        		t.setFlag(1);
-        		PacketHandler.INSTANCE.sendToServer(new MessageTest(1,t.getPos()));
-        		Minecraft.getMinecraft().renderGlobal.loadRenderers();
-        	}
-    	}else if(!this.wasClicking && flag && mouseX >= i + 9 && mouseY >= j + 9 && mouseX < i + 9 + 18 * 8 && mouseY < j + 9 + 18 * 4) {
-    		int mx = mouseX - (i + 9);
-    		int my = mouseY - (j + 9);
-    		int idx = mx / 18;
-    		int idy = my / 18;
-    		if(this.hasItem((idx + idy*8) + (this.currentIdx * 8))) {
-    			if(this.SelectIdx == (idx + idy*8)) {
-    				this.isSelect = !this.isSelect;
-    			}else {
-    				this.isSelect = true;
-    				this.SelectIdx = (idx + idy*8);
-    			}
-    		}
-    		if(this.isSelect) {
-    			this.ButtonX = 144;
-    		}else {
-    			this.ButtonX = 106;
-    		}
-    	}
+        //Button func//
+        if(!this.wasClicking && flag) {
+        	//Scroll//
+        	if(mouseX >= k && mouseY >= l && mouseX < i1 && mouseY < j1)
+        		this.ScrollFunc();
+        	//RegButton//
+        	if(!this.isSelect && !this.UnlockFlag && mouseX >= i + this.ButtonX && mouseY >= j + this.ButtonY && mouseX < i + this.ButtonX + 31 && mouseY < j + this.ButtonY + 15)
+        		this.RegButtonFunc();
+        	//Select//
+        	if(mouseX >= i + 9 && mouseY >= j + 9 && mouseX < i + 9 + 18 * 8 && mouseY < j + 9 + 18 * 4)
+        		this.SelectFunc(mouseX,mouseY,i,j);
+        	//DisConutButton//
+        	if(mouseX >= i + this.ButtonX && mouseY >= j + this.ButtonY + 15 && mouseX < i + this.ButtonX + 31 && mouseY < j + this.ButtonY + 30)
+        		this.DisCntButtonFunc();
+        }
+		if(this.isSelect) {
+			this.ButtonX = 145;
+			this.ButtonY = 83;
+		}else {
+			this.ButtonX = 106;
+			this.ButtonY = 92;
+		}
+      //END Button func//
 
         if (!flag)
         {
             this.isScrolling = false;
             this.isButtonClick = false;
+            this.isButton2Click = false;
         }
         this.wasClicking = flag;
         if (this.isScrolling)
@@ -156,6 +153,7 @@ public class RegBlockGui extends GuiContainer{
 			int count = RegUtil.getCount(item);
 			ItemRender(item,count,9 + (18*idxx),9 + (18*idxy));
 		}
+		this.CheckStates();
 		this.drawSelectionBox();
 		this.drawButton();
 		this.drawArrow();
@@ -194,7 +192,7 @@ public class RegBlockGui extends GuiContainer{
 
 	private boolean hasItem(int idx) {
 		if(BlindnessMod.RegBlockList.size() == 0) return false;
-		if(BlindnessMod.RegBlockList.keySet().toArray().length >= idx)
+		if(BlindnessMod.RegBlockList.keySet().toArray().length > idx)
 			return true;
 		return false;
 	}
@@ -215,7 +213,9 @@ public class RegBlockGui extends GuiContainer{
 	private void drawButton() {
 		this.mc.getTextureManager().bindTexture(TEXTURES);
 		if(this.isSelect) {
-			this.drawTexturedModalRect(this.guiLeft + this.ButtonX,this.guiTop + this.ButtonY,isButtonClick? 71:40, 214, 31, 15);
+			this.drawTexturedModalRect(this.guiLeft + this.ButtonX,this.guiTop + this.ButtonY,isButtonClick || !this.UnlockFlag? 71:40, 214, 31, 15);
+			this.drawTexturedModalRect(this.guiLeft + this.ButtonX,this.guiTop + this.ButtonY + 15,isButton2Click?71:40, 229, 31,15);
+			if(!this.UnlockFlag)this.drawTexturedModalRect(this.guiLeft + this.ButtonX,this.guiTop + this.ButtonY,0, 214, 31, 15);
 		}else {
 			this.drawTexturedModalRect(this.guiLeft + this.ButtonX,this.guiTop + this.ButtonY,isButtonClick? 71:40, 199, 31, 15);
 		}
@@ -238,17 +238,74 @@ public class RegBlockGui extends GuiContainer{
 		if(this.isSelect) {
 			if(this.hasItem(this.SelectIdx + (this.currentIdx *8))) {
 				ItemStack item = RegUtil.getItem(this.SelectIdx + (this.currentIdx *8));
-				this.ItemRender(item, RegUtil.getCount(item), 45/*54*/, 90);
+				this.ItemRender(item, RegUtil.getCount(item), 38/*54*/, 85);
 				int count = RegUtil.getCount(item);
 				String cnt = String.format("%,d", count);
 				String str = "は現在 " + cnt + " 個！";
-				this.drawString(fontRenderer,str,this.guiLeft + 67,this.guiTop + 95, 0xffffff);
-				if(count > 3456);
-				str = "ノルマまであと " + String.format("%,d",3456) + "個！";
-				this.drawString(fontRenderer,str,this.guiLeft + 67,this.guiTop + 104, 0xffffff);
+				this.drawString(fontRenderer,str,this.guiLeft + 60,this.guiTop + 90, 0xffffff);
+				int GCount = this.RegUtil.getGoalValue(item);
+				if(count >= GCount) {
+					str = "ノルマ達成！";
+				}else {
+					str = "ノルマまであと" + String.format("%,d",this.RegUtil.getLeftValue(item)) + "個！";
+				}
+				int width = fontRenderer.getStringWidth(str);
+				this.drawString(fontRenderer,str,(this.guiLeft + 92) - width / 2,this.guiTop + 104, 0xffffff);
 			}
 		}
 	}
+
+	private void CheckStates() {
+		if(this.isSelect) {
+			if(this.hasItem(this.SelectIdx + (this.currentIdx *8))) {
+				ItemStack item = this.RegUtil.getItem(this.SelectIdx + (this.currentIdx *8));
+				int GoalCount = this.RegUtil.getGoalValue(item);
+				this.UnlockFlag =  this.RegUtil.getCount(item) >= GoalCount;
+			}
+		}else {this.UnlockFlag = false;}
+	}
+
+	//Button func//
+	private void ScrollFunc() {
+		this.isScrolling = true;
+        this.isSelect = false;
+	}
+
+	private void RegButtonFunc() {
+		this.isButtonClick = true;
+    	TileRegBlock t = (TileRegBlock)this.tile;
+    	if(t.Reg()) {
+    		t.setFlag(1);
+    		PacketHandler.INSTANCE.sendToServer(new MessageTest(1,t.getPos()));
+    		Minecraft.getMinecraft().renderGlobal.loadRenderers();
+    	}
+	}
+
+	private void SelectFunc(int mouseX,int mouseY,int i,int j){
+		int mx = mouseX - (i + 9);
+		int my = mouseY - (j + 9);
+		int idx = mx / 18;
+		int idy = my / 18;
+		if(this.hasItem((idx + idy*8) + (this.currentIdx * 8))) {
+			if(this.SelectIdx == (idx + idy*8)) {
+				this.isSelect = !this.isSelect;
+			}else {
+				this.isSelect = true;
+				this.SelectIdx = (idx + idy*8);
+			}
+		}
+	}
+
+	private void DisCntButtonFunc() {
+		this.isButton2Click = true;
+    	TileRegBlock t = (TileRegBlock)this.tile;
+    	if(t.addOsonae(this.SelectIdx + (this.currentIdx *8))) {
+    		t.setFlag(2);
+    		PacketHandler.INSTANCE.sendToServer(new MessageTest(2,t.getPos()));
+    	}
+	}
+
+	 //END Button func//
 
 	///////////////////////////////////////////////////////////////////////////
 

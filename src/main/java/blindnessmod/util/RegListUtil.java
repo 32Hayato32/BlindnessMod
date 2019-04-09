@@ -1,6 +1,7 @@
 package blindnessmod.util;
 
 import blindnessmod.BlindnessMod;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -29,5 +30,24 @@ public class RegListUtil {
 		int meta = item.getMetadata();
 		String key = id + ":" + meta;
 		return Float.parseFloat(BlindnessMod.RegBlockList.get(key).split(":")[1]);
+	}
+
+	public static int getGoalValue(ItemStack item) {
+		int GoalCount = 3456 - (int)((3456.0 / 100.0) * ( getDisCount(item)));
+		if(GoalCount == 0)GoalCount = 2;
+		return GoalCount;
+	}
+
+	public static int getLeftValue(ItemStack item) {
+		return getGoalValue(item) - getCount(item);
+	}
+
+	public static float getRate(Item item) {
+		float value = 0.0f;
+		if(item == Items.IRON_INGOT)value =  0.3125f;
+		if(item == Items.GOLD_INGOT)value = 0.625f;
+		if(item == Items.EMERALD)value = 1.25f;
+		if(item == Items.DIAMOND)value = 1.5625f;
+		return value;
 	}
 }
