@@ -16,6 +16,8 @@ import net.minecraft.world.World;
 
 public class RegisterBlock extends BlockBase {
 
+	int shipSpawnDetectorID;
+
 	public RegisterBlock(String name) {
 		super(name, Material.IRON, BlindnessMod.BlindnessMod);
 		setSoundType(SoundType.METAL);
@@ -24,37 +26,12 @@ public class RegisterBlock extends BlockBase {
 	@Override
 	public boolean onBlockActivated(World w, BlockPos pos, IBlockState state, EntityPlayer p,
 			EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-//		if(!w.isRemote) {
-//			p.sendMessage(new TextComponentTranslation("Activated!!"));
-//			if(w.getBlockState(pos.down()).getBlock() == Blocks.IRON_BLOCK) {
-//			//手に持っているアイテムの情報出力
-////				ItemBlock ib = (ItemBlock)p.getHeldItem(hand).getItem();
-////				sendMessage(p,"---------------DEBUG----------------");
-////				sendMessage(p,Block.getStateId(ib.getBlock().getStateFromMeta(p.getHeldItem(hand).getMetadata()))+"");
-////				sendMessage(p,"------------------------------------");
-//				ItemStack heldI = p.getHeldItem(hand);
-//				int id = Item.getIdFromItem(heldI.getItem());
-//				int meta = heldI.getMetadata();
-//				samplemod.samplemod.WhiteBlockList.add(id + ":" + meta);
-//			}else {
-//			//下にあるブロックの情報出力
-//				sendMessage(p,"---------------DEBUG----------------");
-//				IBlockState s = w.getBlockState(pos.down());
-//				sendMessage(p,"Block : " + s.getBlock().getLocalizedName() +"");
-//				sendMessage(p,"Item : " + Item.getIdFromItem(s.getBlock().getItem(null, null, s).getItem()));
-//				sendMessage(p,"Meta : " + s.getBlock().getItem(null, null, s).getMetadata());
-//				sendMessage(p," damageDroppedID : " + s.getBlock().getStateFromMeta(s.getBlock().getItem(null, null, s).getMetadata()));
-//				sendMessage(p,"------------------------------------");
-//			}
-//		}
-
 		if(w.isRemote) {
 			return true;
 		}else {
 			p.openGui(BlindnessMod.INSTANCE,Reference.GUI_REGISTER_BLOCK,w,pos.getX(),pos.getY(),pos.getZ());
 			return true;
 		}
-
 	}
 
 	@Override

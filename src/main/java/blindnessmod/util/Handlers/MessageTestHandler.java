@@ -18,6 +18,7 @@ public class MessageTestHandler implements IMessageHandler<MessageTest, IMessage
             TileRegBlock te = (TileRegBlock) world.getTileEntity(new BlockPos(message.x,message.y,message.z));
             System.out.println(message.x);
             te.setFlag(message.flag);
+            if(message.flag == 3 || message.flag == 4)te.setIndex(message.index);
             te.markDirty();
         });
 		return null;

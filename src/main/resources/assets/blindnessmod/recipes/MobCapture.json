@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XYX",
+    "X X",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:glass",
+      "data": 0
+    },
+    "Y": {
+      "item": "minecraft:wooden_button",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "blindnessmod:mob_capture_empty"
+  }
+}

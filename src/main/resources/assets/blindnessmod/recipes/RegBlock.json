@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "YCY",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "minecraft:iron_ingot",
+      "data": 0
+    },
+    "Y": {
+      "item": "minecraft:paper",
+      "data": 0
+    },
+    "C": {
+      "item": "minecraft:chest",
+      "data": 0
+    }
+  },
+  "result": {
+    "item": "blindnessmod:register_block"
+  }
+}

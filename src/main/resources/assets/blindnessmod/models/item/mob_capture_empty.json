@@ -1,0 +1,6 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "blindnessmod:items/soul_bin_empty"
+    }
+}

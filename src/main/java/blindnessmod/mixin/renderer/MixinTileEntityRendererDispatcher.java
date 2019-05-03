@@ -14,7 +14,7 @@ public class MixinTileEntityRendererDispatcher {
 
 	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
 	public void prerender(TileEntity tileentityIn, float partialTicks, int destroyStage,CallbackInfo ci) {
-		System.out.println(tileentityIn.getBlockType());
+		//System.out.println(tileentityIn.getBlockType());
 		if(WhiteListUtil.Check(tileentityIn.getWorld(),tileentityIn.getPos(), tileentityIn.getBlockType().getDefaultState()))
 			ci.cancel();
 	}

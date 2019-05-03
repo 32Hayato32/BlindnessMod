@@ -7,6 +7,8 @@
 	  	"block.MixinBlock",
 	  	"renderer.MixinTileEntityRendererDispatcher",
 	  	"renderer.MixinBlockRendererDispatcher",
-	  	"renderer.MixinRenderFallingBlock"
+	  	"renderer.MixinRenderFallingBlock",
+	  	"renderer.MixinRenderEntity",
+	  	"renderer.MixinRenderEntityItem"
     ]
 }

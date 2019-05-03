@@ -12,7 +12,8 @@ import net.minecraftforge.fml.common.network.IGuiHandler;
 public class GuiHandler implements IGuiHandler {
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer p, World w, int x, int y, int z) {
-		if(ID == Reference.GUI_REGISTER_BLOCK) return new RegBlockGui(p.inventory, (TileRegBlock)w.getTileEntity(new BlockPos(x,y,z)));
+		System.out.println(x + " , " + y + " , " + z);
+		if(ID == Reference.GUI_REGISTER_BLOCK) return new RegBlockGui(p.inventory, (TileRegBlock)w.getTileEntity(new BlockPos(x,y,z)),x,y,z);
 		return null;
 	}
 
